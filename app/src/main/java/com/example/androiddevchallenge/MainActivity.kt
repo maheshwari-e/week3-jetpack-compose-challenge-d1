@@ -15,14 +15,21 @@
  */
 package com.example.androiddevchallenge
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.Window
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
 class MainActivity : AppCompatActivity() {
@@ -30,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
-                MyApp()
+                MyApp(window)
             }
         }
     }
@@ -38,9 +45,25 @@ class MainActivity : AppCompatActivity() {
 
 // Start building your app here!
 @Composable
-fun MyApp() {
+fun MyApp(window: Window? = null) {
+    window?.apply {
+        statusBarColor = if(isSystemInDarkTheme()) Color.parseColor("#2D3B2D") else Color.parseColor("#FFF1F1")
+        addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        WindowInsetsControllerCompat(this, decorView).isAppearanceLightStatusBars = !isSystemInDarkTheme()
+    }
     Surface(color = MaterialTheme.colors.background) {
-        Text(text = "Ready... Set... GO!")
+        val navController = rememberNavController()
+        NavHost(navController, startDestination = "Welcome") {
+            composable("Welcome") {
+                WelcomeScreen(navController)
+            }
+            composable("Login") {
+                LoginScreen(navController)
+            }
+            composable("Home") {
+                HomeScreen()
+            }
+        }
     }
 }
 
